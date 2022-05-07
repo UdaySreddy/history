@@ -82,24 +82,57 @@ const initialHistoryList = [
 
 // Replace your code here
 class App extends Component {
-  state = {searchInput: ''}
+  state = {searchInput: '', searchList: initialHistoryList}
+
+  search = event => {
+    const {searchList} = this.state
+    const reqList = searchList.filter(each =>
+      each.title.toLowerCase().includes(event.target.value.toLowerCase()),
+    )
+    this.setState({
+      searchInput: event.target.value,
+      searchList: reqList,
+    })
+  }
+
+  deleteSearch = id => {
+    const {searchList} = this.state
+    const deletedSearch = searchList.filter(each => each.id !== id)
+
+    this.setState({searchList: deletedSearch})
+  }
 
   render() {
+    const {searchInput, searchList} = this.state
+    console.log(searchInput)
     return (
       <div>
         <div className="container1">
-          <p>HISTORY</p>
+          <img
+            src="https://assets.ccbp.in/frontend/react-js/history-website-logo-img.png"
+            alt="app logo"
+          />
           <img
             src="https://assets.ccbp.in/frontend/react-js/search-img.png "
             alt="search"
           />
-          <input type="search" />
+          <input type="search" onChange={this.search} />
         </div>
-        <ul>
-          {initialHistoryList.map(each => (
-            <List siteList={each} />
-          ))}
-        </ul>
+        {searchList.length === 0 ? (
+          <div>
+            <p>There is no history to show</p>
+          </div>
+        ) : (
+          <ul>
+            {searchList.map(each => (
+              <List
+                siteList={each}
+                key={each.id}
+                deleteSearch={this.deleteSearch}
+              />
+            ))}
+          </ul>
+        )}
       </div>
     )
   }
